@@ -21,8 +21,12 @@ SIGNUP_SETTINGS_MAPPING = {
         ['SIGNUP_ADMIN_PASSWORD', '', str_not_empty, None],
     'omero.web.signup.group.name':
         ['SIGNUP_GROUP_NAME', '', str_not_empty, None],
+    'omero.web.signup.group.templatetime':
+        ['SIGNUP_GROUP_NAME_TEMPLATETIME', False, bool, None],
     'omero.web.signup.group.perms':
         ['SIGNUP_GROUP_PERMS', 'rw----', str_not_empty, None],
+    'omero.web.signup.email.enabled':
+        ['SIGNUP_EMAIL_ENABLED', False, bool, None],
     'omero.web.signup.email.subject':
         ['SIGNUP_EMAIL_SUBJECT', 'Your OMERO server login details',
          str_not_empty, None],

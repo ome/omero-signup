@@ -4,6 +4,7 @@
 import logging
 import random
 import string
+from datetime import datetime
 
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
@@ -49,7 +50,7 @@ class WebSignupView(View):
 
     def get(self, request, **kwargs):
         """
-        GET simply returns the login page
+        Return the signup page if user is not signed in
         """
         r = self.handle_logged_in(request, **kwargs)
         if r:
@@ -58,7 +59,7 @@ class WebSignupView(View):
 
     def handle_logged_in(self, request, **kwargs):
         """
-        Already logged in, redirect to main webclient
+        If logged in redirect to main webclient, otherwise return None
         """
         # Abuse the @login_required decorateor since it contains the
         # methods to check for an existing session
@@ -77,7 +78,7 @@ class WebSignupView(View):
             logger.error('Logged in')
             try:
                 url = parse_url(settings.LOGIN_REDIRECT)
-            except:
+            except Exception:
                 url = reverse("webindex")
             return HttpResponseRedirect(url)
 
@@ -115,11 +116,13 @@ class WebSignupView(View):
                 institution=form.cleaned_data['institution'],
                 email=form.cleaned_data['email'],
             )
-            self.create_account(user)
+            uid, login, passwd = self.create_account(user)
 
             context = {
                 'version': omero_version,
                 'build_year': build_year,
+                'username': login,
+                'password': passwd,
             }
             if hasattr(settings, 'LOGIN_LOGO'):
                 context['LOGIN_LOGO'] = settings.LOGIN_LOGO
@@ -143,11 +146,13 @@ class WebSignupView(View):
         admin = adminc.getAdminService()
         group = self._get_or_create_group(admin, user)
         uid, login, passwd = self._create_user(admin, user, group)
-        self._email_user(adminc.c, user['email'], uid, login, passwd)
+        if signup_settings.SIGNUP_EMAIL_ENABLED:
+            self._email_user(adminc.c, user['email'], uid, login, passwd)
         return uid, login, passwd
 
     def _get_new_login(self, admin, user):
         omename = '%s%s' % (user['firstname'], user['lastname'])
+        omename = ''.join(c for c in omename if c.isalnum())
         try:
             admin.lookupExperimenter(omename)
             logger.debug('Username already exists: %s' % omename)
@@ -167,6 +172,8 @@ class WebSignupView(View):
 
     def _get_or_create_group(self, admin, user):
         groupname = signup_settings.SIGNUP_GROUP_NAME
+        if signup_settings.SIGNUP_GROUP_NAME_TEMPLATETIME:
+            groupname = datetime.now().strftime(groupname)
         try:
             return admin.lookupGroup(groupname)
         except omero.ApiUsageException as e:

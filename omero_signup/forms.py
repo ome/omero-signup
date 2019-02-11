@@ -28,6 +28,10 @@ def _string_not_white_space(value):
     value = value.strip()
     if not value:
         raise forms.ValidationError('Field must not be empty')
+    wordchars = [c for c in value if c.isalpha()]
+    if not wordchars:
+        raise forms.ValidationError(
+            'At least one alphabetical character required')
     return value
 
 

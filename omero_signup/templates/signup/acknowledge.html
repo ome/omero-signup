@@ -22,7 +22,19 @@
 {% endcomment %}
 
 {% block login %}
-<div>
-      <p>Thank you for signing up. Please check your email for your username and password.</p>
-</div>
+
+
+<form class="standard_form inlined" action="/signup/" method="get">
+  <div>
+    <p>An account has been created for you:</p>
+
+    <div>
+      <p>Username: {{ username }}</br>
+      Password: {{ password }}</p>
+    </div>
+
+    <p><a href="{% url 'weblogin' %}">Please make a note of these details, then go to the login page</a></p>
+  </div>
+</form>
+
 {% endblock %}

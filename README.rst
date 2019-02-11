@@ -6,50 +6,73 @@ OMERO.signup
 ============
 OMERO.web app to allow anyone to signup for an OMERO account.
 
+Generated usernames are formed from the alphanumeric unicode characters in a user's first and last names, with a numeric suffix if the username already exists.
+
 
 Requirements
-============
+------------
 
 * OMERO.web 5.4 or newer.
 
 
 Installation
-============
+------------
 
 This section assumes that an OMERO.web is already installed.
 
 ::
 
     $ python setup.py install
+    $ omero config append omero.web.apps '"omero_signup"'
 
-Required configuration:
+Required configuration settings:
+
+- ``omero.web.signup.host``: OMERO.server hostname
+- ``omero.web.signup.admin.user``: OMERO admin username, must have permission to create groups and users
+- ``omero.web.signup.admin.password``: Password for OMERO admin username
+- ``omero.web.signup.group.name``: Default group for new users, will be created if it doesn't exist
+
+
+Optional configuration settings:
+
+- ``omero.web.signup.port``: OMERO.server port
+- ``omero.web.signup.group.templatetime``: If ``True`` expand ``omero.web.signup.group.name`` using ``strftime`` to enable time-based groups, default disabled
+- ``omero.web.signup.group.perms``: Permissions on default group for new users if it doesn't exist
+
+These configuration settings are untested due to the difficulty of configuring email on a test server:
+
+- ``omero.web.signup.email.enabled``: If ``True`` send emails to new users with their username and password, default disabled
+- ``omero.web.signup.email.subject``: Email subject for new-user emails
+- ``omero.web.signup.email.body``: Email body for new-user emails.
+  It should include template strings ``{username}`` and ``{password}`` that will be substituted with the created user's username and password.
+
+Example:
 
 ::
 
-    $ bin/omero config append omero.web.apps '"omero_signup"'
+    $ omero config get
+    omero.web.apps=["omero_signup"]
+    omero.web.signup.admin.password=root-password
+    omero.web.signup.admin.user=root
+    omero.web.signup.group.name=testgroup-%Y-%m
+    omero.web.signup.group.templatetime=true
+    omero.web.signup.host=localhost
 
-    $ bin/omero config set omero.web.signup.host omero.example.org
-    $ bin/omero config set omero.web.signup.admin.user omero-admin
-    $ bin/omero config set omero.web.signup.admin.password omero-password
-    $ bin/omero config set omero.web.signup.group.name user-group-name
 
-
-Optional configuration:
+Restart OMERO.web in the usual way.
 
 ::
 
-    $ bin/omero config set omero.web.signup.port 4064
-    $ bin/omero config set omero.web.signup.group.perms rw----
-    $ bin/omero config set omero.web.signup.email.subject ...
-    $ bin/omero config set omero.web.signup.email.body ...
+    $ omero web restart
 
-``omero.web.signup.email.body`` should include template strings ``{username}`` and ``{password}`` that will be substituted with the created user's username and password.
+
+New users will be able to sign-up for an account at http://omero.web.host/signup.
 
 
 License
 -------
 
-OMERO.webtest is released under the AGPL.
+OMERO.signup is released under the AGPL.
 
 Copyright
 ---------
