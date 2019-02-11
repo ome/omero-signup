@@ -1,38 +1,39 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import logging
+import random
+import string
+
 from django.conf import settings
-from django.template import loader as template_loader
-from django.utils.http import urlencode
-
 from django.http import HttpResponse, HttpResponseRedirect
+from django.template import loader as template_loader
 from django.template import RequestContext as Context
-from django.shortcuts import render
-from django.views import generic
 from django.views.generic import View
+from django.core.urlresolvers import reverse
 
+import omero
+from omero.gateway import BlitzGateway
+from omero.model import (
+    ExperimenterI,
+    ExperimenterGroupI,
+    PermissionsI,
+)
+from omero.rtypes import (
+    rbool,
+    rstring,
+)
 from omeroweb.decorators import (
-    ConnCleaningHttpResponse,
     login_required,
     parse_url,
 )
-from django.core.urlresolvers import reverse
-
-from omero_version import build_year
-from omero_version import omero_version
-from omeroweb.webgateway import views as webgateway_views
-
-from omeroweb.webclient.decorators import login_required, render_response
+from omero_version import (
+    build_year,
+    omero_version,
+)
 
 from .forms import SignupForm
-
-from cStringIO import StringIO
-
-import logging
-import omero
-from omero.rtypes import rstring
-import omero.gateway
-import random
+import signup_settings
 
 
 logger = logging.getLogger(__name__)
@@ -50,9 +51,6 @@ class WebSignupView(View):
         """
         GET simply returns the login page
         """
-        logger.error('WebSignupView kwargs: %s', kwargs)
-        logger.debug('WebSignupView kwargs: %s', kwargs)
-        print('WebSignupView kwargs: %s', kwargs)
         r = self.handle_logged_in(request, **kwargs)
         if r:
             return r
@@ -109,14 +107,15 @@ class WebSignupView(View):
         """
         error = None
         form = self.form_class(request.POST.copy())
-        if form.is_valid():
-            firstname = form.cleaned_data['firstname']
-            lastname = form.cleaned_data['lastname']
-            institution = form.cleaned_data['institution']
-            email = form.cleaned_data['email']
 
-            print 'firstname:%s lastname:%s institution:%s email:%s' % (
-                firstname, lastname, institution, email)
+        if form.is_valid():
+            user = dict(
+                firstname=form.cleaned_data['firstname'],
+                lastname=form.cleaned_data['lastname'],
+                institution=form.cleaned_data['institution'],
+                email=form.cleaned_data['email'],
+            )
+            self.create_account(user)
 
             context = {
                 'version': omero_version,
@@ -128,6 +127,95 @@ class WebSignupView(View):
             c = Context(request, context)
             rsp = t.render(c)
             return HttpResponse(rsp)
-
         else:
             return self.handle_not_logged_in(request, error, form)
+
+    def create_account(self, user):
+        adminc = BlitzGateway(
+            host=signup_settings.SIGNUP_HOST,
+            port=signup_settings.SIGNUP_PORT,
+            username=signup_settings.SIGNUP_ADMIN_USERNAME,
+            passwd=signup_settings.SIGNUP_ADMIN_PASSWORD,
+            secure=True)
+        if not adminc.connect():
+            raise Exception('Failed to create account '
+                            '(unable to obtain admin connection)')
+        admin = adminc.getAdminService()
+        group = self._get_or_create_group(admin, user)
+        uid, login, passwd = self._create_user(admin, user, group)
+        self._email_user(adminc.c, user['email'], uid, login, passwd)
+        return uid, login, passwd
+
+    def _get_new_login(self, admin, user):
+        omename = '%s%s' % (user['firstname'], user['lastname'])
+        try:
+            admin.lookupExperimenter(omename)
+            logger.debug('Username already exists: %s' % omename)
+        except omero.ApiUsageException as e:
+            if e.message.startswith('No such experimenter'):
+                return omename
+        n = 0
+        while n < 99:
+            n += 1
+            checkname = '%s%d' % (omename, n)
+            try:
+                admin.lookupExperimenter(checkname)
+                logger.debug('Username already exists: %s' % checkname)
+            except omero.ApiUsageException as e:
+                if e.message.startswith('No such experimenter'):
+                    return checkname
+
+    def _get_or_create_group(self, admin, user):
+        groupname = signup_settings.SIGNUP_GROUP_NAME
+        try:
+            return admin.lookupGroup(groupname)
+        except omero.ApiUsageException as e:
+            if e.message.startswith('No such group'):
+                pass
+        g = ExperimenterGroupI()
+        g.name = rstring(groupname)
+        g.details.permissions = PermissionsI(
+            signup_settings.SIGNUP_GROUP_PERMS)
+        g.ldap = rbool(False)
+        logger.info('Creating new signup group: %s', groupname)
+        admin.createGroup(g)
+        return admin.lookupGroup(groupname)
+
+    def _create_user(self, admin, user, group):
+        login = self._get_new_login(admin, user)
+        passwd = ''.join(random.choice(
+            string.ascii_letters + string.digits) for n in xrange(12))
+
+        e = ExperimenterI()
+        e.firstName = rstring(user['firstname'])
+        e.lastName = rstring(user['lastname'])
+        e.email = rstring(user['email'])
+        e.institution = rstring(user['institution'])
+        e.omeName = rstring(login)
+        e.ldap = rbool(False)
+
+        usergroup = ExperimenterGroupI(
+            admin.getSecurityRoles().userGroupId, False)
+        logger.info('Creating new signup user: %s', login)
+        uid = admin.createExperimenterWithPassword(
+            e, rstring(passwd), group, [usergroup])
+
+        return uid, login, passwd
+
+    def _email_user(self, client, email, uid, login, passwd):
+        req = omero.cmd.SendEmailRequest(
+            subject=signup_settings.SIGNUP_EMAIL_SUBJECT.format(
+                username=login, password=passwd),
+            body=signup_settings.SIGNUP_EMAIL_BODY,
+            userIds=[uid],
+            groupIds=[],
+            everyone=False,
+            inactive=True)
+        cb = client.submit(req, loops=10, ms=500,
+                           failonerror=True, failontimeout=True)
+        try:
+            rsp = cb.getResponse()
+            if rsp.invalidemails:
+                raise Exception('Invalid email: %s' % rsp.invalidemails)
+        finally:
+            cb.close(True)

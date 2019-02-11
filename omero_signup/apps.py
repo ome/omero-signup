@@ -17,14 +17,10 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-# Author: Aleksandra Tarkowska <A(dot)Tarkowska(at)dundee(dot)ac(dot)uk>, 2008.
-#
-# Version: 1.0
-#
 
 
 from django.apps import AppConfig
+import signup_settings  # noqa
 
 
 class WebSignupAppConfig(AppConfig):

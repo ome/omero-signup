@@ -15,58 +15,46 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-# Author: Aleksandra Tarkowska <A(dot)Tarkowska(at)dundee(dot)ac(dot)uk>, 2008.
-#
-# Version: 1.0
-#
 
 import logging
 
 from django import forms
-from django.forms.widgets import Textarea
-from django.utils.encoding import force_unicode
-from django.utils.safestring import mark_safe
 
-from omeroweb.custom_forms import NonASCIIForm
-
-# from custom_forms import ServerModelChoiceField, GroupModelChoiceField
-# from custom_forms import GroupModelMultipleChoiceField, OmeNameField
-# from custom_forms import ExperimenterModelMultipleChoiceField, MultiEmailField
 
 logger = logging.getLogger(__name__)
+
+
+def _string_not_white_space(value):
+    value = value.strip()
+    if not value:
+        raise forms.ValidationError('Field must not be empty')
+    return value
+
 
 #################################################################
 # Non-model Form
 
-
-class SignupForm(NonASCIIForm):
-
-    def __init__(self, *args, **kwargs):
-        super(NonASCIIForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['username', 'password']
+class SignupForm(forms.Form):
 
     firstname = forms.CharField(
         max_length=50, widget=forms.TextInput(attrs={
             'size': 22, 'autofocus': 'autofocus'}))
 
     lastname = forms.CharField(
-        max_length=50, widget=forms.TextInput(attrs={
-            'size': 22}))
+        max_length=50, widget=forms.TextInput(attrs={'size': 22}))
 
     institution = forms.CharField(
+        max_length=100, widget=forms.TextInput(attrs={'size': 22}))
+
+    email = forms.EmailField(
         max_length=100, widget=forms.TextInput(attrs={
             'size': 22}))
 
-    email = forms.CharField(
-        max_length=100, widget=forms.TextInput(attrs={
-            'size': 22}))
+    def clean_firstname(self):
+        return _string_not_white_space(self.cleaned_data['firstname'])
 
-    # password = forms.CharField(
-    #     max_length=50,
-    #     widget=forms.PasswordInput(attrs={'size': 22, 'autocomplete': 'off'}))
+    def clean_lastname(self):
+        return _string_not_white_space(self.cleaned_data['lastname'])
 
-    def clean_username(self):
-        if (self.cleaned_data['username'] == 'guest'):
-            raise forms.ValidationError("Guest account is not supported.")
-        return self.cleaned_data['username']
+    def clean_institution(self):
+        return _string_not_white_space(self.cleaned_data['institution'])
