@@ -169,6 +169,7 @@ class WebSignupView(View):
             except omero.ApiUsageException as e:
                 if e.message.startswith('No such experimenter'):
                     return checkname
+        raise Exception('Failed to generate username after %d attempts' % n)
 
     def _get_or_create_group(self, admin, user):
         groupname = signup_settings.SIGNUP_GROUP_NAME
