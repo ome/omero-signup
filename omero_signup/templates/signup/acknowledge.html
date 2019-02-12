@@ -21,20 +21,20 @@
 -->
 {% endcomment %}
 
-{% block login %}
+{% block signup %}
 
 
-<form class="standard_form inlined" action="/signup/" method="get">
+<div class="signup-details">
   <div>
     <p>An account has been created for you:</p>
 
-    <div>
-      <p>Username: {{ username }}</br>
-      Password: {{ password }}</p>
-    </div>
+    <dl>
+      <dt>Username:</dt> <dd>{{ username }}</dd>
+      <dt>Password:</dt> <dd>{{ password }}</dd>
+    </dl>
 
     <p><a href="{% url 'weblogin' %}">Please make a note of these details, then go to the login page</a></p>
   </div>
-</form>
+</div>
 
 {% endblock %}

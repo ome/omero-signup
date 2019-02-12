@@ -24,7 +24,7 @@
 {% block link %}
     {{ block.super }}
     <link rel="stylesheet" href="{% static "webclient/css/layout.css"|add:url_suffix %}" type="text/css" />
-    <link rel="stylesheet" href="{% static "webgateway/css/ome.login.css"|add:url_suffix %}" type="text/css" />
+    <link rel="stylesheet" href="{% static "signup/css/ome.signup.css"|add:url_suffix %}" type="text/css" />
 {% endblock %}
 
 {% block title %}
@@ -67,10 +67,10 @@
     <img src="{% static "webclient/image/logo_login_web.png" %}" />
 </div>
 
-<div id="login">
-    {% block login %}
+<div id="signup">
+    {% block signup %}
 
-    <form class="standard_form inlined" action="{% url 'signup_index' %}" method="post">{% csrf_token %}
+    <form class="standard_form inlined signup-details" action="{% url 'signup_index' %}" method="post">{% csrf_token %}
             {% if error %}
 				<span class="error">{% trans "Error:" %} {{ error }}</span>
 			{% endif %}

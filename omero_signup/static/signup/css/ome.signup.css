@@ -1,0 +1,144 @@
+/*
+ * Copyright (C) 2012 University of Dundee & Open Microscopy Environment.
+ * All rights reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+/* Based on
+ * https://github.com/openmicroscopy/openmicroscopy/blob/v5.4.10/components/tools/OmeroWeb/omeroweb/webgateway/static/webgateway/css/ome.login.css
+*/
+
+body {
+	background:#e0e4ea;
+	height: 0%;
+}
+
+.login-logos {
+   width:100%;
+   height:10%;
+   position: relative;
+   text-align:center;
+}
+
+.custom_logo {
+   position: absolute;
+   bottom: 100%;
+   width: 100%;
+   text-align: center;
+}
+
+#signup {
+	width: 40em;
+	margin: 0 auto;
+	color: #333;
+}
+
+.signup-details {
+  background:#f4f4f5;
+  padding: 30px 50px;
+  border-radius:5px;
+  background:hsl(215,4%,96%);
+  border: solid 1px white;
+	overflow: hidden;
+}
+
+#signup div {
+	padding: 3px;
+	clear: left;
+	overflow: hidden;
+	position: relative;
+}
+
+#signup label {
+  position: absolute;
+  top: 11px;
+  left: 11px;
+  font-weight: lighter;
+  font-size: 1.3em;
+  color: rgba(0,0,0,.4);
+  margin-top: -1px;
+}
+
+#signup input[type=text] {
+	width: 95%;
+	border: solid 1px rgba(0,0,0,.2);
+	border-top: solid 1px rgba(0,0,0,.3);
+	border-radius: 2px;
+	padding: 5px;
+}
+
+#signup input[type=text]:focus, #signup input[type=text]:active {
+	border: solid 1px hsl(210,20%,50%);
+}
+
+#signup input[type="submit"] {
+	cursor: pointer;
+	display: block;
+	background-color: hsl(210,70%,60%);
+	background: linear-gradient(top, hsl(210,40%,70%) 0%,hsl(210,40%,60%) 100%);
+	border: solid 1px hsl(210,40%,60%);
+	box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 1px 2px rgba(0,0,0,.3);
+	padding: 6px;
+	font-size: 1.3em;
+	font-weight: bold;
+	color: hsl(210,70%,10%);
+	border-radius: 3px;
+	float: right;
+	margin: 3px;
+	margin-bottom: 0px;
+}
+
+.error {
+	display: block;
+	width: 100%;
+	text-align: center;
+	padding: 5px;
+	margin-bottom: 10px;
+}
+
+.form_error {
+	margin-right: 3px;
+  float: right;
+	display: inline-block;
+}
+
+.signup-details dl {
+  font-size: 2.6em;
+}
+
+.signup-details dt {
+  display: inline-block;
+  width: 40%;
+  text-align: right;
+  font-weight: lighter;
+}
+
+.signup-details dd {
+  display: inline-block;
+  width: 40%;
+  text-align: left;
+  font-weight: bolder;
+}
+
+#login-footer {
+  clear: both;
+  font-size: 1.1em;
+  text-align: center;
+  margin-top: 10px;
+  line-height: 1.5em;
+  color: hsl(210,10%,65%);
+  text-shadow: 0 1px 0 rgba(255,255,255,.5);
+}
