@@ -14,16 +14,6 @@ from django.views.generic import View
 from django.core.urlresolvers import reverse
 
 import omero
-from omero.gateway import BlitzGateway
-from omero.model import (
-    ExperimenterI,
-    ExperimenterGroupI,
-    PermissionsI,
-)
-from omero.rtypes import (
-    rbool,
-    rstring,
-)
 from omeroweb.decorators import (
     login_required,
     parse_url,
@@ -33,6 +23,7 @@ from omero_version import (
     omero_version,
 )
 
+from omeroweb.webclient.webclient_gateway import OmeroWebGateway
 from .forms import SignupForm
 import signup_settings
 
@@ -134,7 +125,7 @@ class WebSignupView(View):
             return self.handle_not_logged_in(request, error, form)
 
     def create_account(self, user):
-        adminc = BlitzGateway(
+        adminc = OmeroWebGateway(
             host=signup_settings.SIGNUP_HOST,
             port=signup_settings.SIGNUP_PORT,
             username=signup_settings.SIGNUP_ADMIN_USERNAME,
@@ -143,71 +134,59 @@ class WebSignupView(View):
         if not adminc.connect():
             raise Exception('Failed to create account '
                             '(unable to obtain admin connection)')
-        admin = adminc.getAdminService()
-        group = self._get_or_create_group(admin, user)
-        uid, login, passwd = self._create_user(admin, user, group)
+        gid = self._get_or_create_group(adminc, user)
+        uid, login, passwd = self._create_user(adminc, user, gid)
         if signup_settings.SIGNUP_EMAIL_ENABLED:
             self._email_user(adminc.c, user['email'], uid, login, passwd)
         return uid, login, passwd
 
-    def _get_new_login(self, admin, user):
+    def _get_new_login(self, adminc, user):
         omename = '%s%s' % (user['firstname'], user['lastname'])
         omename = ''.join(c for c in omename if c.isalnum())
-        try:
-            admin.lookupExperimenter(omename)
-            logger.debug('Username already exists: %s' % omename)
-        except omero.ApiUsageException as e:
-            if e.message.startswith('No such experimenter'):
-                return omename
+        e = adminc.getObject('Experimenter', attributes={'omeName': omename})
+        if not e:
+            return omename
+
         n = 0
         while n < 99:
             n += 1
             checkname = '%s%d' % (omename, n)
-            try:
-                admin.lookupExperimenter(checkname)
-                logger.debug('Username already exists: %s' % checkname)
-            except omero.ApiUsageException as e:
-                if e.message.startswith('No such experimenter'):
-                    return checkname
+            e = adminc.getObject(
+                'Experimenter', attributes={'omeName': checkname})
+            if not e:
+                return checkname
+
         raise Exception('Failed to generate username after %d attempts' % n)
 
-    def _get_or_create_group(self, admin, user):
+    def _get_or_create_group(self, adminc, user):
         groupname = signup_settings.SIGNUP_GROUP_NAME
         if signup_settings.SIGNUP_GROUP_NAME_TEMPLATETIME:
             groupname = datetime.now().strftime(groupname)
-        try:
-            return admin.lookupGroup(groupname)
-        except omero.ApiUsageException as e:
-            if e.message.startswith('No such group'):
-                pass
-        g = ExperimenterGroupI()
-        g.name = rstring(groupname)
-        g.details.permissions = PermissionsI(
-            signup_settings.SIGNUP_GROUP_PERMS)
-        g.ldap = rbool(False)
-        logger.info('Creating new signup group: %s', groupname)
-        admin.createGroup(g)
-        return admin.lookupGroup(groupname)
+        g = adminc.getObject(
+            'ExperimenterGroup', attributes={'name': groupname})
+        if g:
+            gid = g.id
+        else:
+            logger.info('Creating new signup group: %s %s', groupname,
+                        signup_settings.SIGNUP_GROUP_PERMS)
+            # Parent methods BlitzGateway.createGroup is easier to use than
+            # the child method
+            gid = super(OmeroWebGateway, adminc).createGroup(
+                name=groupname, perms=signup_settings.SIGNUP_GROUP_PERMS)
+        return gid
 
-    def _create_user(self, admin, user, group):
-        login = self._get_new_login(admin, user)
+    def _create_user(self, adminc, user, groupid):
+        login = self._get_new_login(adminc, user)
         passwd = ''.join(random.choice(
             string.ascii_letters + string.digits) for n in xrange(12))
 
-        e = ExperimenterI()
-        e.firstName = rstring(user['firstname'])
-        e.lastName = rstring(user['lastname'])
-        e.email = rstring(user['email'])
-        e.institution = rstring(user['institution'])
-        e.omeName = rstring(login)
-        e.ldap = rbool(False)
-
-        usergroup = ExperimenterGroupI(
-            admin.getSecurityRoles().userGroupId, False)
-        logger.info('Creating new signup user: %s', login)
-        uid = admin.createExperimenterWithPassword(
-            e, rstring(passwd), group, [usergroup])
-
+        logger.info('Creating new signup user: %s group: %d', login, groupid)
+        uid = adminc.createExperimenter(
+            omeName=login,
+            firstName=user['firstname'], lastName=user['lastname'],
+            email=user['email'], isAdmin=False, isActive=True,
+            defaultGroupId=groupid, otherGroupIds=[],
+            password=passwd)
         return uid, login, passwd
 
     def _email_user(self, client, email, uid, login, passwd):
