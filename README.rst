@@ -69,6 +69,19 @@ Restart OMERO.web in the usual way.
 New users will be able to sign-up for an account at http://omero.web.host/signup.
 
 
+Release process
+---------------
+
+Use `bumpversion
+<https://pypi.org/project/bump2version/>`_ to increment the version, commit and tag the repo.
+
+::
+
+    $ bumpversion patch
+    $ git push origin master
+    $ git push --tags
+
+
 License
 -------
 
