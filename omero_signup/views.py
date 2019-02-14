@@ -186,7 +186,7 @@ class WebSignupView(View):
             firstName=user['firstname'], lastName=user['lastname'],
             email=user['email'], isAdmin=False, isActive=True,
             defaultGroupId=groupid, otherGroupIds=[],
-            password=passwd)
+            password=passwd, institution=user['institution'])
         return uid, login, passwd
 
     def _email_user(self, client, email, uid, login, passwd):
