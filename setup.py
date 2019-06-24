@@ -32,7 +32,7 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 
-VERSION = '0.0.7'
+VERSION = '0.0.8'
 
 
 setup(name="omero-signup",
