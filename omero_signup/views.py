@@ -5,6 +5,7 @@ import logging
 import random
 import string
 from datetime import datetime
+from uuid import uuid4
 
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
@@ -77,13 +78,19 @@ class WebSignupView(View):
         """
         Signup form
         """
+
+        # Store id in session to prevent forum resubmission
+        requestid = str(uuid4())
+        request.session['requestid'] = requestid
+
         if form is None:
             form = self.form_class()
         context = {
             'version': omero_version,
             'build_year': build_year,
             'error': error,
-            'form': form
+            'form': form,
+            'requestid': requestid,
         }
         if hasattr(settings, 'LOGIN_LOGO'):
             context['LOGIN_LOGO'] = settings.LOGIN_LOGO
@@ -100,7 +107,12 @@ class WebSignupView(View):
         error = None
         form = self.form_class(request.POST.copy())
 
-        if form.is_valid():
+        session_requestid = request.session.pop('requestid', None)
+        post_requestid = request.POST.get('requestid')
+        if not session_requestid or session_requestid != post_requestid:
+            error = 'Invalid requestid: %s' % post_requestid
+
+        if not error and form.is_valid():
             user = dict(
                 firstname=form.cleaned_data['firstname'],
                 lastname=form.cleaned_data['lastname'],
