@@ -41,7 +41,7 @@ body {
 }
 
 #signup {
-	width: 40em;
+	width: 60em;
 	margin: 0 auto;
 	color: #333;
 }
@@ -52,14 +52,13 @@ body {
   border-radius:5px;
   background:hsl(215,4%,96%);
   border: solid 1px white;
-	overflow: hidden;
+  overflow: auto;
 }
 
 #signup div {
 	padding: 3px;
-	clear: left;
-	overflow: hidden;
-	position: relative;
+	clear: both;
+  position: relative;
 }
 
 #signup label {
@@ -86,19 +85,8 @@ body {
 
 #signup input[type="submit"] {
 	cursor: pointer;
-	display: block;
-	background-color: hsl(210,70%,60%);
-	background: linear-gradient(top, hsl(210,40%,70%) 0%,hsl(210,40%,60%) 100%);
-	border: solid 1px hsl(210,40%,60%);
-	box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 1px 2px rgba(0,0,0,.3);
-	padding: 6px;
-	font-size: 1.3em;
-	font-weight: bold;
-	color: hsl(210,70%,10%);
-	border-radius: 3px;
-	float: right;
-	margin: 3px;
-	margin-bottom: 0px;
+  display: block;
+  margin-right: 14px;
 }
 
 .error {
@@ -112,23 +100,11 @@ body {
 .form_error {
 	margin-right: 3px;
   float: right;
-	display: inline-block;
+	xdisplay: inline-block;
 }
 
-.signup-details dl {
-  font-size: 2.6em;
-}
-
-.signup-details dt {
-  display: inline-block;
-  width: 40%;
-  text-align: right;
-  font-weight: lighter;
-}
-
-.signup-details dd {
-  display: inline-block;
-  width: 40%;
+.signup-details .user-value {
+  font-size: 200%;
   text-align: left;
   font-weight: bolder;
 }

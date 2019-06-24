@@ -115,12 +115,16 @@
 				{% endif %}
 			</div>
 
-      <input type="submit" value="Create account" />
+            <div>
+                <input type="submit" value="Create account"/>
+            </div>
 
-      <div>
-        <p><a href="{% url 'weblogin' %}">If you already have an account login here</a></p>
-        <p><a href="{% url 'waforgottenpassword' %}">If you've forgotten your password reset it here</a></p>
-      </div>
+        <div>
+            <p>
+                <a href="{% url 'weblogin' %}">If you already have an account login here</a></br>
+                <a href="{% url 'waforgottenpassword' %}">If you've forgotten your password reset it here</a>
+            </p>
+        </div>
 
     </form>
 
