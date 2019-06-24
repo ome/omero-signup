@@ -40,7 +40,7 @@ Optional configuration settings:
 
 These configuration settings are untested due to the difficulty of configuring email on a test server:
 
-- ``omero.web.signup.email.enabled``: If ``True`` send emails to new users with their username and password, default disabled
+- ``omero.web.signup.email.enabled``: If ``True`` send emails to new users with their username and password instead of displaying the password, default disabled
 - ``omero.web.signup.email.subject``: Email subject for new-user emails
 - ``omero.web.signup.email.body``: Email body for new-user emails.
   It should include template strings ``{username}`` and ``{password}`` that will be substituted with the created user's username and password.

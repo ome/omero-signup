@@ -114,6 +114,7 @@ class WebSignupView(View):
                 'build_year': build_year,
                 'username': login,
                 'password': passwd,
+                'email': user['email'],
             }
             if hasattr(settings, 'LOGIN_LOGO'):
                 context['LOGIN_LOGO'] = settings.LOGIN_LOGO
@@ -142,6 +143,7 @@ class WebSignupView(View):
         uid, login, passwd = self._create_user(adminc, user, gid)
         if signup_settings.SIGNUP_EMAIL_ENABLED:
             self._email_user(adminc.c, user['email'], uid, login, passwd)
+            passwd = None
         return uid, login, passwd
 
     def _get_new_login(self, adminc, user):

@@ -26,14 +26,18 @@
 
 <div class="signup-details">
   <div>
-    <p>An account has been created for you:</p>
+    <p>An account has been created for you. Username:</p>
+    <p class="user-value">{{ username }}</p>
 
-    <dl>
-      <dt>Username:</dt> <dd>{{ username }}</dd>
-      <dt>Password:</dt> <dd>{{ password }}</dd>
-    </dl>
+    {% if password %}
+      <p>Password:</p>
+      <p class="user-value">{{ password }}</p>
+      <p><a href="{% url 'weblogin' %}">Please make a note of these details, then go to the login page</a></p>
+      {% else %}
+      <p>Your password has been emailed to:</p>
+      <p class="user-value">{{ email }}</p>
+    {% endif %}
 
-    <p><a href="{% url 'weblogin' %}">Please make a note of these details, then go to the login page</a></p>
   </div>
 </div>
 
