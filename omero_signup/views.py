@@ -53,7 +53,7 @@ class WebSignupView(View):
         """
         If logged in redirect to main webclient, otherwise return None
         """
-        # Abuse the @login_required decorateor since it contains the
+        # Abuse the @login_required decorator since it contains the
         # methods to check for an existing session
         check = login_required()
 
