@@ -7,6 +7,7 @@ OMERO.signup
 OMERO.web app to allow anyone to signup for an OMERO account.
 
 Generated usernames are formed from the alphanumeric unicode characters in a user's first and last names, with a numeric suffix if the username already exists.
+If OMERO.web is configured to connect ot multiple OMERO servers the user account will be created on the default one.
 
 
 Requirements
@@ -27,7 +28,6 @@ This section assumes that an OMERO.web is already installed.
 
 Required configuration settings:
 
-- ``omero.web.signup.host``: OMERO.server hostname
 - ``omero.web.signup.admin.user``: OMERO admin username, must have permission to create groups and users
 - ``omero.web.signup.admin.password``: Password for OMERO admin username
 - ``omero.web.signup.group.name``: Default group for new users, will be created if it doesn't exist
@@ -35,7 +35,6 @@ Required configuration settings:
 
 Optional configuration settings:
 
-- ``omero.web.signup.port``: OMERO.server port
 - ``omero.web.signup.group.templatetime``: If ``True`` expand ``omero.web.signup.group.name`` using ``strftime`` to enable time-based groups, default disabled
 - ``omero.web.signup.group.perms``: Permissions on default group for new users if it doesn't exist
 

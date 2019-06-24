@@ -11,10 +11,6 @@ def str_not_empty(o):
 
 # load settings
 SIGNUP_SETTINGS_MAPPING = {
-    'omero.web.signup.host':
-        ['SIGNUP_HOST', '', str_not_empty, None],
-    'omero.web.signup.port':
-        ['SIGNUP_PORT', 4064, int, None],
     'omero.web.signup.admin.user':
         ['SIGNUP_ADMIN_USERNAME', '', str_not_empty, None],
     'omero.web.signup.admin.password':

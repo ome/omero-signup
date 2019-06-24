@@ -125,9 +125,13 @@ class WebSignupView(View):
             return self.handle_not_logged_in(request, error, form)
 
     def create_account(self, user):
+        """
+        Create a new user account using the default OMERO.server
+        """
+        signup_host, signup_port, _ = settings.SERVER_LIST[0]
         adminc = OmeroWebGateway(
-            host=signup_settings.SIGNUP_HOST,
-            port=signup_settings.SIGNUP_PORT,
+            host=signup_host,
+            port=signup_port,
             username=signup_settings.SIGNUP_ADMIN_USERNAME,
             passwd=signup_settings.SIGNUP_ADMIN_PASSWORD,
             secure=True)
