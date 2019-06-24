@@ -208,10 +208,11 @@ class WebSignupView(View):
         return uid, login, passwd
 
     def _email_user(self, client, email, uid, login, passwd):
+        body = signup_settings.SIGNUP_EMAIL_BODY.replace('\\n', '\n').format(
+            username=login, password=passwd)
         req = omero.cmd.SendEmailRequest(
-            subject=signup_settings.SIGNUP_EMAIL_SUBJECT.format(
-                username=login, password=passwd),
-            body=signup_settings.SIGNUP_EMAIL_BODY,
+            subject=signup_settings.SIGNUP_EMAIL_SUBJECT,
+            body=body,
             userIds=[uid],
             groupIds=[],
             everyone=False,

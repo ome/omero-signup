@@ -32,12 +32,9 @@ SIGNUP_SETTINGS_MAPPING = {
          str_not_empty, None],
     'omero.web.signup.email.body':
         ['SIGNUP_EMAIL_BODY', (
-            """
-            Your login details for OMERO server are:
-
-            username: {username}
-            password: {password}
-            """
+            'Your login details for OMERO server are:\n\n'
+            'username: {username}\n'
+            'password: {password}\n'
         ), str_not_empty, None],
 }
 
