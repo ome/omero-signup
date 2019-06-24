@@ -38,6 +38,11 @@
       <p class="user-value">{{ email }}</p>
     {% endif %}
 
+    {%if helpmessage %}
+    <div>
+        <p>{{ helpmessage | urlize }}</p>
+    </div>
+    {% endif %}
   </div>
 </div>
 

@@ -127,6 +127,11 @@
                 <a href="{% url 'waforgottenpassword' %}">If you've forgotten your password reset it here</a>
             </p>
         </div>
+        {%if helpmessage %}
+        <div>
+            <p>{{ helpmessage | urlize }}</p>
+        </div>
+        {% endif %}
 
     </form>
 

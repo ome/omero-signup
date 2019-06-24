@@ -91,6 +91,7 @@ class WebSignupView(View):
             'error': error,
             'form': form,
             'requestid': requestid,
+            'helpmessage': signup_settings.SIGNUP_HELP_MESSAGE,
         }
         if hasattr(settings, 'LOGIN_LOGO'):
             context['LOGIN_LOGO'] = settings.LOGIN_LOGO
@@ -127,6 +128,7 @@ class WebSignupView(View):
                 'username': login,
                 'password': passwd,
                 'email': user['email'],
+                'helpmessage': signup_settings.SIGNUP_HELP_MESSAGE,
             }
             if hasattr(settings, 'LOGIN_LOGO'):
                 context['LOGIN_LOGO'] = settings.LOGIN_LOGO

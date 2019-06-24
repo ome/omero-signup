@@ -36,6 +36,8 @@ SIGNUP_SETTINGS_MAPPING = {
             'username: {username}\n'
             'password: {password}\n'
         ), str_not_empty, None],
+    'omero.web.signup.helpmessage':
+        ['SIGNUP_HELP_MESSAGE', '', str, None],
 }
 
 
