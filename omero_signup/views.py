@@ -11,8 +11,8 @@ from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader as template_loader
 from django.template import RequestContext as Context
-from django.views.generic import View
 from django.utils.encoding import smart_str
+from django.views.generic import View
 from django.core.urlresolvers import reverse
 
 import omero
@@ -121,14 +121,14 @@ class WebSignupView(View):
                 institution=form.cleaned_data['institution'],
                 email=form.cleaned_data['email'],
             )
-            uid, login, passwd = self.create_account(user)
+            omeuser = self.create_account(user)
 
             context = {
                 'version': omero_version,
                 'build_year': build_year,
-                'username': login,
-                'password': passwd,
-                'email': user['email'],
+                'username': omeuser['login'],
+                'password': omeuser['password'],
+                'email': omeuser['email'],
                 'helpmessage': signup_settings.SIGNUP_HELP_MESSAGE,
             }
             if hasattr(settings, 'LOGIN_LOGO'):
@@ -155,18 +155,15 @@ class WebSignupView(View):
             raise Exception('Failed to create account '
                             '(unable to obtain admin connection)')
         gid = self._get_or_create_group(adminc, user)
-        uid, login, passwd = self._create_user(adminc, user, gid)
+        omeuser = self._create_user(adminc, user, gid)
         if signup_settings.SIGNUP_EMAIL_ENABLED:
-            self._email_user(adminc.c, user['email'], uid, login, passwd)
-            passwd = None
-        return uid, login, passwd
+            self._email_user(adminc.c, omeuser)
+            omeuser['password'] = None
+        return omeuser
 
     def _get_new_login(self, adminc, user):
-        # user fields are str but we want isalnum to include unicode
         omename = '%s%s' % (user['firstname'], user['lastname'])
-        omename = omename.decode('utf-8')
         omename = ''.join(c for c in omename if c.isalnum())
-        omename = smart_str(omename)
         e = adminc.getObject('Experimenter', attributes={'omeName': omename})
         if not e:
             return omename
@@ -200,26 +197,40 @@ class WebSignupView(View):
         return gid
 
     def _create_user(self, adminc, user, groupid):
-        login = self._get_new_login(adminc, user)
-        passwd = ''.join(random.choice(
+        """
+        Automatically converts Django form strings to whatever OMERO needs.
+        https://github.com/openmicroscopy/openmicroscopy/blob/v5.5.0/components/tools/OmeroWeb/omeroweb/custom_forms.py#L63
+        """
+        def _convert_unicode(s):
+            return str(smart_str(s))
+
+        omeuser = dict((k, _convert_unicode(v)) for (k, v) in user.items())
+        omeuser['login'] = _convert_unicode(self._get_new_login(adminc, user))
+        omeuser['password'] = ''.join(random.choice(
             string.ascii_letters + string.digits) for n in xrange(12))
 
-        logger.info('Creating new signup user: %s group: %d', login, groupid)
-        uid = adminc.createExperimenter(
-            omeName=login,
-            firstName=user['firstname'], lastName=user['lastname'],
-            email=user['email'], isAdmin=False, isActive=True,
-            defaultGroupId=groupid, otherGroupIds=[],
-            password=passwd, institution=user['institution'])
-        return uid, login, passwd
+        logger.info('Creating new signup user: %s group: %d', omeuser, groupid)
+        omeuser['uid'] = adminc.createExperimenter(
+            omeName=omeuser['login'],
+            firstName=omeuser['firstname'],
+            lastName=omeuser['lastname'],
+            email=omeuser['email'],
+            isAdmin=False,
+            isActive=True,
+            defaultGroupId=groupid,
+            otherGroupIds=[],
+            password=omeuser['password'],
+            institution=omeuser['institution']
+        )
+        return omeuser
 
-    def _email_user(self, client, email, uid, login, passwd):
+    def _email_user(self, client, omeuser):
         body = signup_settings.SIGNUP_EMAIL_BODY.replace('\\n', '\n').format(
-            username=login, password=passwd)
+            username=omeuser['login'], password=omeuser['password'])
         req = omero.cmd.SendEmailRequest(
             subject=signup_settings.SIGNUP_EMAIL_SUBJECT,
             body=body,
-            userIds=[uid],
+            userIds=[omeuser['uid']],
             groupIds=[],
             everyone=False,
             inactive=True)
