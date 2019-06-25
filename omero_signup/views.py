@@ -12,6 +12,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader as template_loader
 from django.template import RequestContext as Context
 from django.views.generic import View
+from django.utils.encoding import smart_str
 from django.core.urlresolvers import reverse
 
 import omero
@@ -161,8 +162,11 @@ class WebSignupView(View):
         return uid, login, passwd
 
     def _get_new_login(self, adminc, user):
+        # user fields are str but we want isalnum to include unicode
         omename = '%s%s' % (user['firstname'], user['lastname'])
+        omename = omename.decode('utf-8')
         omename = ''.join(c for c in omename if c.isalnum())
+        omename = smart_str(omename)
         e = adminc.getObject('Experimenter', attributes={'omeName': omename})
         if not e:
             return omename

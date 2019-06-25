@@ -19,26 +19,16 @@
 import logging
 
 from django import forms
+from omeroweb.custom_forms import NonASCIIForm
 
 
 logger = logging.getLogger(__name__)
 
 
-def _string_not_white_space(value):
-    value = value.strip()
-    if not value:
-        raise forms.ValidationError('Field must not be empty')
-    wordchars = [c for c in value if c.isalpha()]
-    if not wordchars:
-        raise forms.ValidationError(
-            'At least one alphabetical character required')
-    return value
-
-
 #################################################################
 # Non-model Form
 
-class SignupForm(forms.Form):
+class SignupForm(NonASCIIForm):
 
     firstname = forms.CharField(
         max_length=50, widget=forms.TextInput(attrs={
@@ -53,12 +43,3 @@ class SignupForm(forms.Form):
     email = forms.EmailField(
         max_length=100, widget=forms.TextInput(attrs={
             'size': 22}))
-
-    def clean_firstname(self):
-        return _string_not_white_space(self.cleaned_data['firstname'])
-
-    def clean_lastname(self):
-        return _string_not_white_space(self.cleaned_data['lastname'])
-
-    def clean_institution(self):
-        return _string_not_white_space(self.cleaned_data['institution'])
