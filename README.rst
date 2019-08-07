@@ -1,5 +1,5 @@
-.. image:: https://travis-ci.org/openmicroscopy/omero-signup.svg?branch=master
-    :target: https://travis-ci.org/openmicroscopy/omero-webtest
+.. image:: https://travis-ci.org/ome/omero-signup.svg?branch=master
+    :target: https://travis-ci.org/ome/omero-webtest
 
 
 OMERO.signup
