@@ -1,5 +1,5 @@
 .. image:: https://travis-ci.org/ome/omero-signup.svg?branch=master
-    :target: https://travis-ci.org/ome/omero-webtest
+    :target: https://travis-ci.org/ome/omero-signup
 
 
 OMERO.signup
