@@ -7,7 +7,7 @@ OMERO.signup
 OMERO.web app to allow anyone to signup for an OMERO account.
 
 Generated usernames are formed from the alphanumeric unicode characters in a user's first and last names, with a numeric suffix if the username already exists.
-If OMERO.web is configured to connect ot multiple OMERO servers the user account will be created on the default one.
+If OMERO.web is configured to connect to multiple OMERO servers the user account will be created on the default one.
 
 
 Requirements
@@ -23,7 +23,7 @@ This section assumes that an OMERO.web is already installed.
 
 ::
 
-    $ python setup.py install
+    $ pip install omero-signup
     $ omero config append omero.web.apps '"omero_signup"'
 
 Required configuration settings:
