@@ -68,7 +68,7 @@ class WebSignupView(View):
             except Exception:
                 conn = None
         if conn is not None:
-            logger.error('Logged in')
+            logger.info('Logged in')
             try:
                 url = parse_url(settings.LOGIN_REDIRECT)
             except Exception:
