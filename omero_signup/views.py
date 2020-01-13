@@ -27,7 +27,7 @@ from omero_version import (
 
 from omeroweb.webclient.webclient_gateway import OmeroWebGateway
 from .forms import SignupForm
-import signup_settings
+from . import signup_settings
 
 
 logger = logging.getLogger(__name__)
@@ -204,10 +204,10 @@ class WebSignupView(View):
         def _convert_unicode(s):
             return str(smart_str(s))
 
-        omeuser = dict((k, _convert_unicode(v)) for (k, v) in user.items())
+        omeuser = dict((k, _convert_unicode(v)) for (k, v) in list(user.items()))
         omeuser['login'] = _convert_unicode(self._get_new_login(adminc, user))
         omeuser['password'] = ''.join(random.choice(
-            string.ascii_letters + string.digits) for n in xrange(12))
+            string.ascii_letters + string.digits) for n in list(range(12)))
 
         logger.info('Creating new signup user: %s group: %d', omeuser, groupid)
         omeuser['uid'] = adminc.createExperimenter(

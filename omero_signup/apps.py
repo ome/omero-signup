@@ -20,7 +20,7 @@
 
 
 from django.apps import AppConfig
-import signup_settings  # noqa
+from . import signup_settings  # noqa
 
 
 class WebSignupAppConfig(AppConfig):
