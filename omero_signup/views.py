@@ -204,7 +204,8 @@ class WebSignupView(View):
         def _convert_unicode(s):
             return str(smart_str(s))
 
-        omeuser = dict((k, _convert_unicode(v)) for (k, v) in list(user.items()))
+        omeuser = dict((k, _convert_unicode(v))
+                       for (k, v) in list(user.items()))
         omeuser['login'] = _convert_unicode(self._get_new_login(adminc, user))
         omeuser['password'] = ''.join(random.choice(
             string.ascii_letters + string.digits) for n in list(range(12)))
