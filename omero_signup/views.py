@@ -208,7 +208,7 @@ class WebSignupView(View):
                        for (k, v) in list(user.items()))
         omeuser['login'] = _convert_unicode(self._get_new_login(adminc, user))
         omeuser['password'] = ''.join(random.choice(
-            string.ascii_letters + string.digits) for n in list(range(12)))
+            string.ascii_letters + string.digits) for n in range(12))
 
         logger.info('Creating new signup user: %s group: %d', omeuser, groupid)
         omeuser['uid'] = adminc.createExperimenter(
