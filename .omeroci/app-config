@@ -1,0 +1,14 @@
+#!/bin/bash
+set -e
+set -u
+set -x
+
+# Call super. Activates virtualenv
+. /infra/app-config
+
+cat > /opt/omero/web/config/10-signup.omero <<EOF
+config append omero.web.apps '"omero_signup"'
+config set omero.web.signup.admin.user root
+config set omero.web.signup.admin.password omero
+config set omero.web.signup.group.name NewGroup
+EOF
