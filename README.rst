@@ -13,7 +13,8 @@ If OMERO.web is configured to connect to multiple OMERO servers the user account
 Requirements
 ------------
 
-* OMERO.web 5.4 or newer.
+* OMERO.web 5.6 or newer.
+* Python 3.6 or newer.
 
 
 Installation
