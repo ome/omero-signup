@@ -14,6 +14,7 @@ from django.template import RequestContext as Context
 from django.utils.encoding import smart_str
 from django.views.generic import View
 from django.core.urlresolvers import reverse
+from django.shortcuts import render
 
 import omero
 from omeroweb.decorators import (
@@ -97,10 +98,7 @@ class WebSignupView(View):
         if hasattr(settings, 'LOGIN_LOGO'):
             context['LOGIN_LOGO'] = settings.LOGIN_LOGO
 
-        t = template_loader.get_template('signup/index.html')
-        c = Context(request, context)
-        rsp = t.render(c)
-        return HttpResponse(rsp)
+        return render(request, 'signup/index.html', context)
 
     def post(self, request):
         """
