@@ -8,9 +8,7 @@ from datetime import datetime
 from uuid import uuid4
 
 from django.conf import settings
-from django.http import HttpResponse, HttpResponseRedirect
-from django.template import loader as template_loader
-from django.template import RequestContext as Context
+from django.http import HttpResponseRedirect
 from django.utils.encoding import smart_str
 from django.views.generic import View
 from django.core.urlresolvers import reverse
@@ -131,10 +129,8 @@ class WebSignupView(View):
             }
             if hasattr(settings, 'LOGIN_LOGO'):
                 context['LOGIN_LOGO'] = settings.LOGIN_LOGO
-            t = template_loader.get_template('signup/acknowledge.html')
-            c = Context(request, context)
-            rsp = t.render(c)
-            return HttpResponse(rsp)
+
+            return render(request, 'signup/acknowledge.html', context)
         else:
             return self.handle_not_logged_in(request, error, form)
 
