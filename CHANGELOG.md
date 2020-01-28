@@ -1,3 +1,8 @@
+0.2.2 (January 2020)
+--------------------
+
+- Another fix for Django 1.11 support ([10](https://github.com/ome/omero-signup/pull/10))
+
 0.2.1 (January 2020)
 --------------------
 
