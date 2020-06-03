@@ -19,9 +19,9 @@ from omeroweb.decorators import (
     login_required,
     parse_url,
 )
-from omero_version import (
-    build_year,
-    omero_version,
+from omeroweb.version import (
+    omeroweb_buildyear as build_year,
+    omeroweb_version as omero_version,
 )
 
 from omeroweb.webclient.webclient_gateway import OmeroWebGateway
