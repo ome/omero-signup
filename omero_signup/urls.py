@@ -5,7 +5,6 @@ from . import views
 
 
 urlpatterns = [
-
     # index 'home page' of the websignup app
-    url(r'^$', views.WebSignupView.as_view(), name="signup_index"),
+    url(r"^$", views.WebSignupView.as_view(), name="signup_index"),
 ]

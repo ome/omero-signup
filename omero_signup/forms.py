@@ -27,38 +27,39 @@ logger = logging.getLogger(__name__)
 def _string_not_white_space(value):
     value = value.strip()
     if not value:
-        raise forms.ValidationError('Field must not be empty')
+        raise forms.ValidationError("Field must not be empty")
     wordchars = [c for c in value if c.isalpha()]
     if not wordchars:
-        raise forms.ValidationError(
-            'At least one alphabetical character required')
+        raise forms.ValidationError("At least one alphabetical character required")
     return value
 
 
 #################################################################
 # Non-model Form
 
+
 class SignupForm(forms.Form):
 
     firstname = forms.CharField(
-        max_length=50, widget=forms.TextInput(attrs={
-            'size': 22, 'autofocus': 'autofocus'}))
+        max_length=50,
+        widget=forms.TextInput(attrs={"size": 22, "autofocus": "autofocus"}),
+    )
 
     lastname = forms.CharField(
-        max_length=50, widget=forms.TextInput(attrs={'size': 22}))
+        max_length=50, widget=forms.TextInput(attrs={"size": 22})
+    )
 
     institution = forms.CharField(
-        max_length=100, widget=forms.TextInput(attrs={'size': 22}))
+        max_length=100, widget=forms.TextInput(attrs={"size": 22})
+    )
 
-    email = forms.EmailField(
-        max_length=100, widget=forms.TextInput(attrs={
-            'size': 22}))
+    email = forms.EmailField(max_length=100, widget=forms.TextInput(attrs={"size": 22}))
 
     def clean_firstname(self):
-        return _string_not_white_space(self.cleaned_data['firstname'])
+        return _string_not_white_space(self.cleaned_data["firstname"])
 
     def clean_lastname(self):
-        return _string_not_white_space(self.cleaned_data['lastname'])
+        return _string_not_white_space(self.cleaned_data["lastname"])
 
     def clean_institution(self):
-        return _string_not_white_space(self.cleaned_data['institution'])
+        return _string_not_white_space(self.cleaned_data["institution"])
