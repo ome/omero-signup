@@ -1,6 +1,8 @@
-.. image:: https://travis-ci.org/ome/omero-signup.svg?branch=master
-    :target: https://travis-ci.org/ome/omero-signup
+.. image:: https://github.com/ome/omero-signup/workflows/OMERO/badge.svg
+    :target: https://github.com/ome/omero-signup/actions
 
+.. image:: https://badge.fury.io/py/omero-signup.svg
+    :target: https://badge.fury.io/py/omero-signup
 
 OMERO.signup
 ============
