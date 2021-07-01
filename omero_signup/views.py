@@ -4,6 +4,7 @@
 import logging
 import random
 import string
+import time
 from datetime import datetime
 from uuid import uuid4
 
@@ -229,11 +230,26 @@ class WebSignupView(View):
             groupIds=[],
             everyone=False,
             inactive=True)
-        cb = client.submit(req, loops=10, ms=500,
-                           failonerror=True, failontimeout=True)
-        try:
-            rsp = cb.getResponse()
-            if rsp.invalidemails:
-                raise Exception('Invalid email: %s' % rsp.invalidemails)
-        finally:
-            cb.close(True)
+
+        maxtries = signup_settings.SIGNUP_EMAIL_MAXTRIES
+        delay = signup_settings.SIGNUP_EMAIL_DELAY
+        retries = 0
+
+        while True:
+            try:
+                cb = client.submit(req, loops=10, ms=500,
+                                   failonerror=True, failontimeout=True)
+                rsp = cb.getResponse()
+                if rsp.invalidemails:
+                    raise Exception('Invalid email: %s' % rsp.invalidemails)
+                break
+            except omero.LockTimeout as e:
+                if retries < maxtries - 1:
+                    logger.warn(f"{e.message}, Retrying in {delay} seconds")
+                    retries += 1
+                    time.sleep(delay)
+                    continue
+                else:
+                    raise
+            finally:
+                cb.close(True)
