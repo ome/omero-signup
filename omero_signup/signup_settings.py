@@ -38,12 +38,9 @@ SIGNUP_SETTINGS_MAPPING = {
         ), str_not_empty, None],
     'omero.web.signup.helpmessage':
         ['SIGNUP_HELP_MESSAGE', '', str, None],
-    'omero.web.signup.email.maxtries':
-        ['SIGNUP_EMAIL_MAXTRIES', 3, int,
-         "Maximum number of tries when attempting to send an email."],
     'omero.web.signup.email.delay':
-        ['SIGNUP_EMAIL_DELAY', 4, int,
-         "Delay in between attempts to send an email in seconds."]
+        ['SIGNUP_EMAIL_DELAY', 5000, int,
+         "Delay in between attempts to send an email in milliseconds."]
 }
 
 
