@@ -1,3 +1,10 @@
+0.3.0 (July 2021)
+-----------------
+
+- Make wait time between email command calls configurable and set the default to 5000ms ([16](https://github.com/ome/omero-signup/pull/16))
+- Add linebreak in acknowledgement form ([13](https://github.com/ome/omero-signup/pull/13))
+- Switch CI from Travis CI to GitHub actions
+
 0.2.2 (January 2020)
 --------------------
 
