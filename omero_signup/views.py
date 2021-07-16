@@ -229,8 +229,9 @@ class WebSignupView(View):
             groupIds=[],
             everyone=False,
             inactive=True)
-        cb = client.submit(req, loops=10, ms=500,
-                           failonerror=True, failontimeout=True)
+        cb = client.submit(
+            req, loops=10, ms=signup_settings.SIGNUP_EMAIL_DELAY,
+            failonerror=True, failontimeout=True)
         try:
             rsp = cb.getResponse()
             if rsp.invalidemails:
