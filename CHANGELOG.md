@@ -1,3 +1,8 @@
+0.3.1 (March 2022)
+------------------
+
+- Pin omero-web to 5.14.0 ([17](https://github.com/ome/omero-signup/pull/17))
+
 0.3.0 (July 2021)
 -----------------
 
