@@ -11,7 +11,7 @@ from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.utils.encoding import smart_str
 from django.views.generic import View
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.shortcuts import render
 
 import omero
