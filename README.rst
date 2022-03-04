@@ -58,7 +58,6 @@ Example:
     omero.web.signup.admin.user=root
     omero.web.signup.group.name=testgroup-%Y-%m
     omero.web.signup.group.templatetime=true
-    omero.web.signup.host=localhost
 
 
 Restart OMERO.web in the usual way.
