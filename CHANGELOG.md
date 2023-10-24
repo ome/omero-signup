@@ -1,3 +1,8 @@
+0.3.3 (October 2023)
+--------------------
+
+- Make app compatible with Django 4.0.x ([19](https://github.com/ome/omero-signup/pull/19))
+
 0.3.2 (March 2022)
 ------------------
 
